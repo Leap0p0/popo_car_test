@@ -16,6 +16,8 @@ RMenu:Get("car_test", "sure").Closed = function()end
 cate = {}
 voitureliste = {}
 
+--open the menu in RageUI--
+
 local function openMenu()
 	FreezeEntityPosition(PlayerPedId(), true)
 
@@ -57,14 +59,15 @@ local function openMenu()
                 RageUI.Button(_U('yes'), _U('yes'), {RightLabel = "~g~0$"}, true,function(h,a,s)
                     if (s) then
                         RageUI.CloseAll()
-                        TriggerServerEvent('car_test:vehicule', 500)
-                        spawnCar(model2)
+                        FreezeEntityPosition(PlayerPedId(), false)
+                        TriggerServerEvent('car_test:go')
                     end
                 end)
 
                 RageUI.Button(_U('no'), _U('no'), {RightLabel = "~g~0$"}, true,function(h,a,s)
                     if (s) then
                         RageUI.CloseAll()
+                        FreezeEntityPosition(PlayerPedId(), false)
                     end
                 end)
             end, function()end, 1)
@@ -74,6 +77,7 @@ local function openMenu()
 
 end
 
+--draw marker--
 Citizen.CreateThread(function()
     while true do
         local interval = 1
@@ -87,6 +91,7 @@ Citizen.CreateThread(function()
             if distance < 1 then
                 AddTextEntry("try", _U('open'))
                 DisplayHelpTextThisFrame("try", false)
+                DrawMarker(2, Config.pedpos, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 170, 0, 1, 2, 0, nil, nil, 0)
                 if IsControlJustPressed(1, 51) then
                     openMenu()
                     ESX.TriggerServerCallback('car_test:cat', function(keys)
@@ -98,6 +103,8 @@ Citizen.CreateThread(function()
         Citizen.Wait(interval)
     end  
 end)
+
+--spawn car function--
 
 function spawnCar(car)
     local ped = PlayerPedId()
@@ -126,4 +133,37 @@ function spawnCar(car)
     DeleteVehicle(vehicle)
     FreezeEntityPosition(PlayerPedId(), false)
     SetEntityCoords(ped, Config.pedpos, false, false, false, false)
+    TriggerServerEvent('car_test:no_test')
 end
+
+-- go or not ?--
+
+RegisterNetEvent("car_test:can_go")
+AddEventHandler("car_test:can_go", function()
+    TriggerServerEvent('car_test:on_test')
+    TriggerServerEvent('car_test:vehicule', 0)
+    spawnCar(model2)
+end)
+
+RegisterNetEvent("car_test:cant_go")
+AddEventHandler("car_test:cant_go", function()
+    ESX.ShowNotification(_U('teston'))
+end)
+
+--display blip--
+
+Citizen.CreateThread(function()
+
+    local blip = AddBlipForCoord(Config.Blip.Pos.x, Config.Blip.Pos.y, Config.Blip.Pos.z)
+  
+    SetBlipSprite (blip, Config.Blip.Sprite)
+    SetBlipDisplay(blip, Config.Blip.Display)
+    SetBlipScale  (blip, Config.Blip.Scale)
+    SetBlipColour (blip, Config.Blip.Colour)
+    SetBlipAsShortRange(blip, true)
+  
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(_U('Essai'))
+    EndTextCommandSetBlipName(blip)
+  
+end)

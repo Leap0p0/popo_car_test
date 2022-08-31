@@ -10,6 +10,7 @@ Locales['en'] = {
     ['time_bis'] = "~r~ seconds~s~ left before you return the test car!",
     ['timetoend'] = "You return the test car in ",
     ['timetoend_bis'] = '~r~ seconds~s~ !',
+    ['teston'] = "~r~Someone is already testing a vehicle! Wait for him to finish.",
     ['yes'] = 'Yes',
     ['no'] = 'No',
 }
